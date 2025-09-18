@@ -1,0 +1,23 @@
+services:
+  pg:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
+      POSTGRES_DB: ${PGDATABASE:-vapi}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  server:
+    build: ./server
+    depends_on: [pg]
+    env_file: .env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./server:/app
+    command: ["air"]
+
+volumes:
+  pgdata:
